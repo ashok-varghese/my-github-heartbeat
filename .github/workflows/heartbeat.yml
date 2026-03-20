@@ -1,0 +1,26 @@
+name: Hourly Profile Heartbeat
+
+on:
+  schedule:
+    - cron: '0 * * * *' # Runs at the start of every hour
+  workflow_dispatch: # Allows manual testing
+
+jobs:
+  heartbeat:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Run Python Script
+        run: python scripts/update_log.py
+
+      - name: Commit and Push
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "22csel08@kristujayanti.com"
+          git add heartbeat.txt
+          git commit -m "Heartbeat Update: $(date)" || echo "No changes"
+          git push
